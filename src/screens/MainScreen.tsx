@@ -39,13 +39,13 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
         </View>
 
         <View style={styles.featureGrid}>
-          <View style={styles.featureCard}>
+          <TouchableOpacity style={styles.featureCard} onPress={onFindServices}>
             <Text style={styles.featureEmoji}>🔍</Text>
             <Text style={styles.featureTitle}>Find Services</Text>
             <Text style={styles.featureDescription}>
               Discover skilled professionals in your area
             </Text>
-          </View>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.featureCard} onPress={onOfferSkills}>
             <Text style={styles.featureEmoji}>💼</Text>

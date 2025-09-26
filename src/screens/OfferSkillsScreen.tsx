@@ -48,11 +48,13 @@ const skillCategories: SkillCategory[] = [
 interface OfferSkillsScreenProps {
   onBackPress: () => void;
   onServicePress: (service: Service) => void;
+  onExploreSkills: () => void;
 }
 
 const OfferSkillsScreen: React.FC<OfferSkillsScreenProps> = ({
   onBackPress,
   onServicePress,
+  onExploreSkills,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -200,6 +202,20 @@ const OfferSkillsScreen: React.FC<OfferSkillsScreenProps> = ({
           <View style={styles.statCard}>
             <Text style={styles.statNumber}>0</Text>
             <Text style={styles.statLabel}>Reviews</Text>
+          </View>
+        </View>
+
+        {/* Explore Skills Card */}
+        <View style={styles.exploreCard}>
+          <View style={styles.exploreContent}>
+            <Text style={styles.exploreTitle}>Want to explore other skills?</Text>
+            <Text style={styles.exploreDescription}>
+              Discover what services are in demand and find inspiration for new offerings
+            </Text>
+            <TouchableOpacity style={styles.exploreButton} onPress={onExploreSkills}>
+              <Ionicons name="search" size={20} color="#FFFFFF" />
+              <Text style={styles.exploreButtonText}>Explore Skills</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -573,6 +589,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '600',
+  },
+  exploreCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    padding: 25,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  exploreContent: {
+    alignItems: 'center',
+  },
+  exploreTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  exploreDescription: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 24,
+  },
+  exploreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 25,
+  },
+  exploreButtonText: {
+    fontSize: 16,
+    color: '#667eea',
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });
 

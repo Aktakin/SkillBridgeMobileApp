@@ -23,37 +23,37 @@ const serviceCategories: ServiceCategory[] = [
   {
     id: '1',
     name: 'Cleaning Services',
-    icon: '🧹',
+    icon: '',
     color: '#4A90E2',
   },
   {
     id: '2',
     name: 'Laundry Services',
-    icon: '👕',
+    icon: '',
     color: '#4A90E2',
   },
   {
     id: '3',
     name: 'Plumbing Services',
-    icon: '🔧',
+    icon: '',
     color: '#4A90E2',
   },
   {
     id: '4',
     name: 'Electrical Services',
-    icon: '⚡',
+    icon: '',
     color: '#4A90E2',
   },
   {
     id: '5',
     name: 'Carpentry Services',
-    icon: '🔨',
+    icon: '',
     color: '#4A90E2',
   },
   {
     id: '6',
     name: 'Delivery Services',
-    icon: '🛵',
+    icon: '',
     color: '#4A90E2',
   },
 ];
@@ -63,6 +63,9 @@ interface ServiceDiscoveryScreenProps {
   onSeeAllPress: () => void;
   onSearchPress: () => void;
   onBackPress: () => void;
+  onBookingsPress: () => void;
+  onMessagesPress: () => void;
+  onProfilePress: () => void;
 }
 
 const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
@@ -70,6 +73,9 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
   onSeeAllPress,
   onSearchPress,
   onBackPress,
+  onBookingsPress,
+  onMessagesPress,
+  onProfilePress,
 }) => {
   const renderCategoryCard = (category: ServiceCategory) => (
     <TouchableOpacity
@@ -77,9 +83,6 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
       style={styles.categoryCard}
       onPress={() => onCategoryPress(category)}
     >
-      <View style={styles.categoryIconContainer}>
-        <Text style={styles.categoryIcon}>{category.icon}</Text>
-      </View>
       <Text style={styles.categoryName}>{category.name}</Text>
     </TouchableOpacity>
   );
@@ -94,10 +97,10 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.menuButton} onPress={onBackPress}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.notificationButton}>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
+          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -113,7 +116,7 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
       <View style={styles.searchSection}>
         <Text style={styles.searchTitle}>What service are you providing today?</Text>
         <TouchableOpacity style={styles.searchContainer} onPress={onSearchPress}>
-          <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
+          <Ionicons name="search" size={20} color="rgba(255, 255, 255, 0.7)" style={styles.searchIcon} />
           <Text style={styles.searchPlaceholder}>Search skills, services...</Text>
         </TouchableOpacity>
       </View>
@@ -132,22 +135,22 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
         </View>
       </View>
 
-      {/* Bottom Navigation Placeholder */}
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#4A90E2" />
+          <Ionicons name="home" size={24} color="#FFFFFF" />
           <Text style={[styles.navText, styles.activeNavText]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="calendar-outline" size={24} color="#999" />
+        <TouchableOpacity style={styles.navItem} onPress={onBookingsPress}>
+          <Ionicons name="calendar-outline" size={24} color="rgba(255, 255, 255, 0.7)" />
           <Text style={styles.navText}>Bookings</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="mail-outline" size={24} color="#999" />
+        <TouchableOpacity style={styles.navItem} onPress={onMessagesPress}>
+          <Ionicons name="mail-outline" size={24} color="rgba(255, 255, 255, 0.7)" />
           <Text style={styles.navText}>Messages</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={24} color="#999" />
+        <TouchableOpacity style={styles.navItem} onPress={onProfilePress}>
+          <Ionicons name="person-outline" size={24} color="rgba(255, 255, 255, 0.7)" />
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>

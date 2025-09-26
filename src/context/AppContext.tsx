@@ -4,8 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface AppContextType {
   isFirstLaunch: boolean;
   setIsFirstLaunch: (value: boolean) => void;
-  currentScreen: 'splash' | 'onboarding' | 'auth' | 'main' | 'services' | 'offer-skills' | 'service-detail';
-  setCurrentScreen: (screen: 'splash' | 'onboarding' | 'auth' | 'main' | 'services' | 'offer-skills' | 'service-detail') => void;
+  currentScreen: 'splash' | 'onboarding' | 'auth' | 'main' | 'services' | 'service-listing' | 'all-categories' | 'offer-skills' | 'service-detail' | 'bookings' | 'messages' | 'profile';
+  setCurrentScreen: (screen: 'splash' | 'onboarding' | 'auth' | 'main' | 'services' | 'service-listing' | 'all-categories' | 'offer-skills' | 'service-detail' | 'bookings' | 'messages' | 'profile') => void;
   user: any | null;
   setUser: (user: any | null) => void;
 }
@@ -18,7 +18,7 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean>(true);
-  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'auth' | 'main' | 'services' | 'offer-skills' | 'service-detail'>('splash');
+  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'auth' | 'main' | 'services' | 'service-listing' | 'all-categories' | 'offer-skills' | 'service-detail' | 'bookings' | 'messages' | 'profile'>('splash');
   const [user, setUser] = useState<any | null>(null);
 
   useEffect(() => {

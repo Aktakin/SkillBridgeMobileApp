@@ -5,12 +5,18 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import MainScreen from './src/screens/MainScreen';
 import ServiceDiscoveryScreen from './src/screens/ServiceDiscoveryScreen';
+import ServiceListingScreen from './src/screens/ServiceListingScreen';
+import AllCategoriesScreen from './src/screens/AllCategoriesScreen';
 import OfferSkillsScreen from './src/screens/OfferSkillsScreen';
 import ServiceDetailScreen from './src/screens/ServiceDetailScreen';
+import BookingsScreen from './src/screens/BookingsScreen';
+import MessagesScreen from './src/screens/MessagesScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 const AppContent: React.FC = () => {
   const { currentScreen, setCurrentScreen, isFirstLaunch } = useApp();
   const [selectedService, setSelectedService] = React.useState<any>(null);
+  const [selectedCategory, setSelectedCategory] = React.useState<any>(null);
 
   const handleSplashFinish = () => {
     if (isFirstLaunch) {
@@ -41,13 +47,21 @@ const AppContent: React.FC = () => {
   };
 
   const handleCategoryPress = (category: any) => {
-    console.log('Category pressed:', category);
-    // Handle category selection
+    setSelectedCategory(category);
+    setCurrentScreen('service-listing');
+  };
+
+  const handleBackToServices = () => {
+    setCurrentScreen('services');
+  };
+
+  const handleServicePress = (service: any) => {
+    console.log('Service pressed:', service);
+    // Handle service selection
   };
 
   const handleSeeAllPress = () => {
-    console.log('See all pressed');
-    // Handle see all categories
+    setCurrentScreen('all-categories');
   };
 
   const handleSearchPress = () => {
@@ -57,11 +71,6 @@ const AppContent: React.FC = () => {
 
   const handleOfferSkills = () => {
     setCurrentScreen('offer-skills');
-  };
-
-  const handleServicePress = (service: any) => {
-    setSelectedService(service);
-    setCurrentScreen('service-detail');
   };
 
   const handleBackToOfferSkills = () => {
@@ -77,6 +86,28 @@ const AppContent: React.FC = () => {
     console.log('Delete service:', serviceId);
     // Handle service deletion
     setCurrentScreen('offer-skills');
+  };
+
+  const handleBookingsPress = () => {
+    setCurrentScreen('bookings');
+  };
+
+  const handleMessagesPress = () => {
+    setCurrentScreen('messages');
+  };
+
+  const handleProfilePress = () => {
+    setCurrentScreen('profile');
+  };
+
+  const handleBookingPress = (booking: any) => {
+    console.log('Booking pressed:', booking);
+    // Handle booking details
+  };
+
+  const handleMessagePress = (message: any) => {
+    console.log('Message pressed:', message);
+    // Handle message details
   };
 
   switch (currentScreen) {
@@ -95,6 +126,30 @@ const AppContent: React.FC = () => {
           onSeeAllPress={handleSeeAllPress}
           onSearchPress={handleSearchPress}
           onBackPress={handleBackToMain}
+          onBookingsPress={handleBookingsPress}
+          onMessagesPress={handleMessagesPress}
+          onProfilePress={handleProfilePress}
+        />
+      );
+    case 'service-listing':
+      return (
+        <ServiceListingScreen
+          category={selectedCategory}
+          onBackPress={handleBackToServices}
+          onServicePress={handleServicePress}
+          onBookingsPress={handleBookingsPress}
+          onMessagesPress={handleMessagesPress}
+          onProfilePress={handleProfilePress}
+        />
+      );
+    case 'all-categories':
+      return (
+        <AllCategoriesScreen
+          onBackPress={handleBackToServices}
+          onCategoryPress={handleCategoryPress}
+          onBookingsPress={handleBookingsPress}
+          onMessagesPress={handleMessagesPress}
+          onProfilePress={handleProfilePress}
         />
       );
     case 'offer-skills':
@@ -102,6 +157,7 @@ const AppContent: React.FC = () => {
         <OfferSkillsScreen
           onBackPress={handleBackToMain}
           onServicePress={handleServicePress}
+          onExploreSkills={handleFindServices}
         />
       );
     case 'service-detail':
@@ -111,6 +167,36 @@ const AppContent: React.FC = () => {
           onBackPress={handleBackToOfferSkills}
           onEditPress={handleEditService}
           onDeletePress={handleDeleteService}
+        />
+      );
+    case 'bookings':
+      return (
+        <BookingsScreen
+          onBackPress={handleBackToServices}
+          onBookingPress={handleBookingPress}
+          onHomePress={handleFindServices}
+          onMessagesPress={handleMessagesPress}
+          onProfilePress={handleProfilePress}
+        />
+      );
+    case 'messages':
+      return (
+        <MessagesScreen
+          onBackPress={handleBackToServices}
+          onMessagePress={handleMessagePress}
+          onHomePress={handleFindServices}
+          onBookingsPress={handleBookingsPress}
+          onProfilePress={handleProfilePress}
+        />
+      );
+    case 'profile':
+      return (
+        <ProfileScreen
+          onBackPress={handleBackToServices}
+          onLogout={handleLogout}
+          onHomePress={handleFindServices}
+          onBookingsPress={handleBookingsPress}
+          onMessagesPress={handleMessagesPress}
         />
       );
     default:
