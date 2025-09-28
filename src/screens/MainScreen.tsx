@@ -14,9 +14,10 @@ interface MainScreenProps {
   onLogout: () => void;
   onFindServices: () => void;
   onOfferSkills: () => void;
+  onSettingsPress: () => void;
 }
 
-const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOfferSkills }) => {
+const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOfferSkills, onSettingsPress }) => {
   const { showAsProvider, showAsEmployer } = useApp();
   
   // Calculate how many feature cards will be shown
@@ -50,9 +51,14 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
       
       <View style={styles.header}>
         <Text style={styles.logo}>SkillB</Text>
-        <TouchableOpacity onPress={onLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity onPress={onSettingsPress} style={styles.settingsButton}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onLogout} style={styles.logoutButton}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.content}>
@@ -139,10 +145,24 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 20,
   },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   logo: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
+  },
+  settingsButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  settingsIcon: {
+    fontSize: 18,
   },
   logoutButton: {
     paddingHorizontal: 15,

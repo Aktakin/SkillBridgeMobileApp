@@ -137,6 +137,10 @@ const AppContent: React.FC = () => {
     navigateToScreen('profile');
   };
 
+  const handleSettingsPress = () => {
+    navigateToScreen('settings');
+  };
+
   const handleBookingPress = (booking: any) => {
     console.log('Booking pressed:', booking);
     // Handle booking details
@@ -197,7 +201,7 @@ const AppContent: React.FC = () => {
     case 'auth':
       return <AuthScreen onLogin={handleAuthSuccess} />;
     case 'main':
-      return <MainScreen onLogout={handleLogout} onFindServices={handleFindServices} onOfferSkills={handleOfferSkills} />;
+      return <MainScreen onLogout={handleLogout} onFindServices={handleFindServices} onOfferSkills={handleOfferSkills} onSettingsPress={handleSettingsPress} />;
     case 'services':
       return (
         <ServiceDiscoveryScreen
