@@ -18,6 +18,29 @@ interface MainScreenProps {
 
 const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOfferSkills }) => {
   const { showAsProvider, showAsEmployer } = useApp();
+  
+  // Calculate how many feature cards will be shown
+  const visibleCardsCount = (showAsEmployer ? 1 : 0) + (showAsProvider ? 1 : 0) + 2; // +2 for Rate & Review and Secure Payments
+  
+  // Determine card width and layout based on visible cards
+  let cardWidth: string;
+  let isVerticalLayout = false;
+  
+  if (visibleCardsCount === 2) {
+    cardWidth = '100%'; // Two cards stacked vertically
+    isVerticalLayout = true;
+  } else if (visibleCardsCount === 3) {
+    cardWidth = '48%'; // Three cards: 2 on top row, 1 on bottom
+  } else {
+    cardWidth = '48%'; // Four cards: 2x2 grid (default)
+  }
+  
+  // Special case: if only one view is enabled, stack cards vertically
+  const isOnlyOneViewEnabled = (showAsEmployer && !showAsProvider) || (!showAsEmployer && showAsProvider);
+  if (isOnlyOneViewEnabled) {
+    cardWidth = '100%'; // Full width for vertical stacking
+    isVerticalLayout = true;
+  }
   return (
     <LinearGradient
       colors={['#667eea', '#764ba2']}
@@ -40,9 +63,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
           </Text>
         </View>
 
-        <View style={styles.featureGrid}>
+        <View style={[styles.featureGrid, isVerticalLayout && styles.verticalGrid]}>
           {showAsEmployer && (
-            <TouchableOpacity style={styles.featureCard} onPress={onFindServices}>
+            <TouchableOpacity style={[styles.featureCard, { width: cardWidth }]} onPress={onFindServices}>
               <Text style={styles.featureEmoji}>🔍</Text>
               <Text style={styles.featureTitle}>Find Services</Text>
               <Text style={styles.featureDescription}>
@@ -52,7 +75,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
           )}
 
           {showAsProvider && (
-            <TouchableOpacity style={styles.featureCard} onPress={onOfferSkills}>
+            <TouchableOpacity style={[styles.featureCard, { width: cardWidth }]} onPress={onOfferSkills}>
               <Text style={styles.featureEmoji}>💼</Text>
               <Text style={styles.featureTitle}>Offer Skills</Text>
               <Text style={styles.featureDescription}>
@@ -61,7 +84,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
             </TouchableOpacity>
           )}
 
-          <View style={styles.featureCard}>
+          <View style={[styles.featureCard, { width: cardWidth }]}>
             <Text style={styles.featureEmoji}>⭐</Text>
             <Text style={styles.featureTitle}>Rate & Review</Text>
             <Text style={styles.featureDescription}>
@@ -69,7 +92,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
             </Text>
           </View>
 
-          <View style={styles.featureCard}>
+          <View style={[styles.featureCard, { width: cardWidth }]}>
             <Text style={styles.featureEmoji}>💳</Text>
             <Text style={styles.featureTitle}>Secure Payments</Text>
             <Text style={styles.featureDescription}>
@@ -160,13 +183,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 30,
   },
+  verticalGrid: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
   featureCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 15,
     padding: 20,
-    width: '48%',
     marginBottom: 15,
     alignItems: 'center',
+    minHeight: 120,
   },
   featureEmoji: {
     fontSize: 32,
