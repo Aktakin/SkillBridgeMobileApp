@@ -123,7 +123,19 @@ const ServiceListingScreen: React.FC<ServiceListingScreenProps> = ({
           <Text style={styles.serviceProvider}>by {service.provider}</Text>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.servicePrice}>{service.price}</Text>
+          <Text style={styles.servicePrice}>
+            ${service.currentPrice || service.price}
+          </Text>
+          {service.bargainingStatus && service.bargainingStatus !== 'none' && (
+            <View style={styles.bargainingBadge}>
+              <Text style={styles.bargainingText}>
+                {service.bargainingStatus === 'pending' ? 'Bargaining Pending' :
+                 service.bargainingStatus === 'in_progress' ? 'Negotiating' :
+                 service.bargainingStatus === 'accepted' ? 'Price Agreed' :
+                 'Bargaining Rejected'}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -477,6 +489,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.7)',
     marginTop: 4,
+  },
+  bargainingBadge: {
+    backgroundColor: 'rgba(156, 39, 176, 0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginTop: 4,
+    alignSelf: 'flex-start',
+  },
+  bargainingText: {
+    fontSize: 10,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
 

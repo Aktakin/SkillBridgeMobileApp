@@ -22,37 +22,37 @@ interface ServiceCategory {
 const serviceCategories: ServiceCategory[] = [
   {
     id: '1',
-    name: 'Cleaning Services',
+    name: 'Cleaning',
     icon: '',
     color: '#4A90E2',
   },
   {
     id: '2',
-    name: 'Laundry Services',
+    name: 'Laundry',
     icon: '',
     color: '#4A90E2',
   },
   {
     id: '3',
-    name: 'Plumbing Services',
+    name: 'Plumbing',
     icon: '',
     color: '#4A90E2',
   },
   {
     id: '4',
-    name: 'Electrical Services',
+    name: 'Electrical',
     icon: '',
     color: '#4A90E2',
   },
   {
     id: '5',
-    name: 'Carpentry Services',
+    name: 'Carpentry',
     icon: '',
     color: '#4A90E2',
   },
   {
     id: '6',
-    name: 'Delivery Services',
+    name: 'Delivery',
     icon: '',
     color: '#4A90E2',
   },
@@ -63,6 +63,7 @@ interface ServiceDiscoveryScreenProps {
   onSeeAllPress: () => void;
   onSearchPress: () => void;
   onBackPress: () => void;
+  onBackToHome: () => void;
   onBookingsPress: () => void;
   onMessagesPress: () => void;
   onProfilePress: () => void;
@@ -73,6 +74,7 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
   onSeeAllPress,
   onSearchPress,
   onBackPress,
+  onBackToHome,
   onBookingsPress,
   onMessagesPress,
   onProfilePress,
@@ -133,6 +135,20 @@ const ServiceDiscoveryScreen: React.FC<ServiceDiscoveryScreenProps> = ({
         <View style={styles.categoriesGrid}>
           {serviceCategories.map(renderCategoryCard)}
         </View>
+      </View>
+
+      {/* Back to Home Card */}
+      <View style={styles.backToHomeSection}>
+        <TouchableOpacity style={styles.backToHomeCard} onPress={onBackToHome}>
+          <View style={styles.backToHomeContent}>
+            <Ionicons name="home-outline" size={24} color="#FFFFFF" />
+            <View style={styles.backToHomeText}>
+              <Text style={styles.backToHomeTitle}>Back to Home</Text>
+              <Text style={styles.backToHomeDescription}>Return to main dashboard</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.7)" />
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Bottom Navigation */}
@@ -268,6 +284,35 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+  backToHomeSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  backToHomeCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  backToHomeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backToHomeText: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  backToHomeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  backToHomeDescription: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   bottomNav: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,32 +11,41 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  price: string;
-  category: string;
-  images: string[];
-  createdAt?: Date;
-  rating?: number;
-  reviews?: number;
-}
+import BargainModal from '../components/BargainModal';
+import { Service, BargainingOffer } from '../types';
 
 interface ServiceDetailScreenProps {
   service: Service;
+  isOwnService?: boolean;
+  currentUserId?: string;
+  currentUserType?: 'provider' | 'seeker';
   onBackPress: () => void;
   onEditPress: (service: Service) => void;
   onDeletePress: (serviceId: string) => void;
+  onContactPress: (service: Service) => void;
+  onBookNowPress: (service: Service) => void;
+  onBargainPress?: (service: Service) => void;
+  onSendBargainOffer?: (serviceId: string, offer: Omit<BargainingOffer, 'id' | 'timestamp'>) => void;
+  onAcceptBargainOffer?: (serviceId: string, offerId: string) => void;
+  onRejectBargainOffer?: (serviceId: string, offerId: string) => void;
 }
 
 const ServiceDetailScreen: React.FC<ServiceDetailScreenProps> = ({
   service,
+  isOwnService = false,
+  currentUserId,
+  currentUserType = 'seeker',
   onBackPress,
   onEditPress,
   onDeletePress,
+  onContactPress,
+  onBookNowPress,
+  onBargainPress,
+  onSendBargainOffer,
+  onAcceptBargainOffer,
+  onRejectBargainOffer,
 }) => {
+  const [showBargainModal, setShowBargainModal] = useState(false);
   const handleEdit = () => {
     onEditPress(service);
   };
@@ -58,6 +67,84 @@ const ServiceDetailScreen: React.FC<ServiceDetailScreenProps> = ({
 
   const handleShare = () => {
     Alert.alert('Share Service', 'Service sharing functionality would be implemented here');
+  };
+
+  const handleContact = () => {
+    Alert.alert(
+      'Contact Service Provider',
+      'This will open an in-app message to contact the service provider directly.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Send Message', 
+          onPress: () => onContactPress(service)
+        },
+      ]
+    );
+  };
+
+  const handleBookNow = () => {
+    const currentPrice = service.currentPrice || service.price;
+    Alert.alert(
+      'Book Service',
+      `Are you ready to book "${service.title}" for $${currentPrice}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Send Request', 
+          onPress: () => onBookNowPress(service)
+        },
+      ]
+    );
+  };
+
+  const handleBargainPress = () => {
+    if (onBargainPress) {
+      onBargainPress(service);
+    } else {
+      setShowBargainModal(true);
+    }
+  };
+
+  const handleSendOffer = (offer: Omit<BargainingOffer, 'id' | 'timestamp'>) => {
+    if (onSendBargainOffer) {
+      onSendBargainOffer(service.id, offer);
+    }
+    setShowBargainModal(false);
+  };
+
+  const handleAcceptOffer = (offerId: string) => {
+    if (onAcceptBargainOffer) {
+      onAcceptBargainOffer(service.id, offerId);
+    }
+  };
+
+  const handleRejectOffer = (offerId: string) => {
+    if (onRejectBargainOffer) {
+      onRejectBargainOffer(service.id, offerId);
+    }
+  };
+
+  const getBargainingButtonText = () => {
+    if (service.bargainingStatus === 'none' || !service.bargainingStatus) {
+      return currentUserType === 'seeker' ? 'Set Price & Bargain' : 'Bargaining Not Available';
+    }
+    if (service.bargainingStatus === 'pending') {
+      return 'Bargaining Pending';
+    }
+    if (service.bargainingStatus === 'in_progress') {
+      return 'Continue Bargaining';
+    }
+    if (service.bargainingStatus === 'accepted') {
+      return 'Price Agreed';
+    }
+    return 'Bargaining Rejected';
+  };
+
+  const canBargain = () => {
+    return (service.bargainingStatus === 'none' || !service.bargainingStatus) && currentUserType === 'seeker' ||
+           service.bargainingStatus === 'in_progress' ||
+           service.bargainingStatus === 'pending';
   };
 
   return (
@@ -84,8 +171,17 @@ const ServiceDetailScreen: React.FC<ServiceDetailScreenProps> = ({
           <View style={styles.serviceHeader}>
             <Text style={styles.serviceTitle}>{service.title}</Text>
             <View style={styles.priceContainer}>
-              <Text style={styles.priceLabel}>Price</Text>
-              <Text style={styles.priceValue}>${service.price}</Text>
+              <Text style={styles.priceLabel}>
+                {service.bargainingStatus && service.bargainingStatus !== 'none' ? 'Current Price' : 'Price'}
+              </Text>
+              <Text style={styles.priceValue}>
+                ${service.currentPrice || service.price}
+              </Text>
+              {service.bargainingStatus && service.bargainingStatus !== 'none' && service.initialPrice && (
+                <Text style={styles.originalPrice}>
+                  Original: ${service.initialPrice}
+                </Text>
+              )}
             </View>
           </View>
 
@@ -163,18 +259,41 @@ const ServiceDetailScreen: React.FC<ServiceDetailScreenProps> = ({
           </View>
         </View>
 
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Ionicons name="create-outline" size={20} color="#667eea" />
-            <Text style={styles.editButtonText}>Edit Service</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-            <Ionicons name="trash-outline" size={20} color="#FFFFFF" />
-            <Text style={styles.deleteButtonText}>Delete Service</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Action Buttons - Show different buttons based on context */}
+        {!isOwnService ? (
+          /* Customer Actions - Contact, Bargain, and Book Now */
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.contactButton} onPress={handleContact}>
+              <Ionicons name="chatbubble-outline" size={20} color="#FFFFFF" />
+              <Text style={styles.contactButtonText}>Contact</Text>
+            </TouchableOpacity>
+            
+            {canBargain() && (
+              <TouchableOpacity style={styles.bargainButton} onPress={handleBargainPress}>
+                <Ionicons name="swap-horizontal-outline" size={20} color="#FFFFFF" />
+                <Text style={styles.bargainButtonText}>{getBargainingButtonText()}</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity style={styles.bookButton} onPress={handleBookNow}>
+              <Ionicons name="calendar-outline" size={20} color="#FFFFFF" />
+              <Text style={styles.bookButtonText}>Book Now</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          /* Provider Actions - Edit and Delete */
+          <View style={styles.providerActions}>
+            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+              <Ionicons name="create-outline" size={20} color="#667eea" />
+              <Text style={styles.editButtonText}>Edit Service</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={20} color="#FFFFFF" />
+              <Text style={styles.deleteButtonText}>Delete Service</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Tips Section */}
         <View style={styles.tipsSection}>
@@ -188,6 +307,18 @@ const ServiceDetailScreen: React.FC<ServiceDetailScreenProps> = ({
           </View>
         </View>
       </ScrollView>
+
+      {/* Bargain Modal */}
+      <BargainModal
+        visible={showBargainModal}
+        service={service}
+        currentUserId={currentUserId || ''}
+        currentUserType={currentUserType}
+        onClose={() => setShowBargainModal(false)}
+        onSendOffer={handleSendOffer}
+        onAcceptOffer={handleAcceptOffer}
+        onRejectOffer={handleRejectOffer}
+      />
     </LinearGradient>
   );
 };
@@ -252,6 +383,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
+  },
+  originalPrice: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    marginTop: 4,
+    textDecorationLine: 'line-through',
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -360,6 +497,62 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   actionButtons: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    gap: 10,
+    flexWrap: 'wrap',
+  },
+  contactButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4CAF50',
+    borderRadius: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  contactButtonText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  bargainButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#9C27B0',
+    borderRadius: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    minWidth: 140,
+  },
+  bargainButtonText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginLeft: 8,
+    textAlign: 'center',
+  },
+  bookButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6B35',
+    borderRadius: 12,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  bookButtonText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  providerActions: {
     flexDirection: 'row',
     marginBottom: 25,
     gap: 15,

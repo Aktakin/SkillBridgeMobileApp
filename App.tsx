@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert } from 'react-native';
 import { AppProvider, useApp } from './src/context/AppContext';
 import SplashScreen from './src/screens/SplashScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
@@ -12,56 +13,79 @@ import ServiceDetailScreen from './src/screens/ServiceDetailScreen';
 import BookingsScreen from './src/screens/BookingsScreen';
 import MessagesScreen from './src/screens/MessagesScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
+import MyServicesScreen from './src/screens/MyServicesScreen';
+import PaymentMethodsScreen from './src/screens/PaymentMethodsScreen';
+import HelpSupportScreen from './src/screens/HelpSupportScreen';
+import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
+import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 
 const AppContent: React.FC = () => {
-  const { currentScreen, setCurrentScreen, isFirstLaunch } = useApp();
+  const { currentScreen, setCurrentScreen, isFirstLaunch, navigationHistory, setNavigationHistory } = useApp();
   const [selectedService, setSelectedService] = React.useState<any>(null);
   const [selectedCategory, setSelectedCategory] = React.useState<any>(null);
+  const [isOwnService, setIsOwnService] = React.useState<boolean>(false);
+
+  // Navigation helper functions
+  const navigateToScreen = (screen: any) => {
+    setNavigationHistory([...navigationHistory, currentScreen]);
+    setCurrentScreen(screen);
+  };
+
+  const navigateBack = () => {
+    if (navigationHistory.length > 0) {
+      const previousScreen = navigationHistory[navigationHistory.length - 1];
+      setNavigationHistory(navigationHistory.slice(0, -1));
+      setCurrentScreen(previousScreen);
+    }
+  };
 
   const handleSplashFinish = () => {
     if (isFirstLaunch) {
-      setCurrentScreen('onboarding');
+      navigateToScreen('onboarding');
     } else {
-      setCurrentScreen('auth');
+      navigateToScreen('auth');
     }
   };
 
   const handleOnboardingFinish = () => {
-    setCurrentScreen('auth');
+    navigateToScreen('auth');
   };
 
   const handleAuthSuccess = () => {
-    setCurrentScreen('main');
+    navigateToScreen('main');
   };
 
   const handleLogout = () => {
-    setCurrentScreen('auth');
+    navigateToScreen('auth');
   };
 
   const handleFindServices = () => {
-    setCurrentScreen('services');
+    navigateToScreen('services');
   };
 
   const handleBackToMain = () => {
-    setCurrentScreen('main');
+    navigateToScreen('main');
   };
 
   const handleCategoryPress = (category: any) => {
     setSelectedCategory(category);
-    setCurrentScreen('service-listing');
+    navigateToScreen('service-listing');
   };
 
   const handleBackToServices = () => {
-    setCurrentScreen('services');
+    navigateToScreen('services');
   };
 
-  const handleServicePress = (service: any) => {
-    console.log('Service pressed:', service);
-    // Handle service selection
+  const handleServicePress = (service: any, isOwn: boolean = false) => {
+    setSelectedService(service);
+    setIsOwnService(isOwn);
+    navigateToScreen('service-detail');
   };
 
   const handleSeeAllPress = () => {
-    setCurrentScreen('all-categories');
+    navigateToScreen('all-categories');
   };
 
   const handleSearchPress = () => {
@@ -70,11 +94,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleOfferSkills = () => {
-    setCurrentScreen('offer-skills');
+    navigateToScreen('offer-skills');
   };
 
   const handleBackToOfferSkills = () => {
-    setCurrentScreen('offer-skills');
+    navigateToScreen('offer-skills');
   };
 
   const handleEditService = (service: any) => {
@@ -85,19 +109,32 @@ const AppContent: React.FC = () => {
   const handleDeleteService = (serviceId: string) => {
     console.log('Delete service:', serviceId);
     // Handle service deletion
-    setCurrentScreen('offer-skills');
+    navigateToScreen('offer-skills');
+  };
+
+  const handleContactService = (service: any) => {
+    console.log('Contact service provider:', service);
+    // Navigate to messages screen or create new conversation
+    navigateToScreen('messages');
+  };
+
+  const handleBookService = (service: any) => {
+    console.log('Book service:', service);
+    // Create booking request and navigate to bookings
+    Alert.alert('Booking Request Sent', `Your request for "${service.title}" has been sent to the provider.`);
+    navigateToScreen('bookings');
   };
 
   const handleBookingsPress = () => {
-    setCurrentScreen('bookings');
+    navigateToScreen('bookings');
   };
 
   const handleMessagesPress = () => {
-    setCurrentScreen('messages');
+    navigateToScreen('messages');
   };
 
   const handleProfilePress = () => {
-    setCurrentScreen('profile');
+    navigateToScreen('profile');
   };
 
   const handleBookingPress = (booking: any) => {
@@ -108,6 +145,48 @@ const AppContent: React.FC = () => {
   const handleMessagePress = (message: any) => {
     console.log('Message pressed:', message);
     // Handle message details
+  };
+
+  const handleEditProfile = () => {
+    navigateToScreen('edit-profile');
+  };
+
+  const handleMyServices = () => {
+    navigateToScreen('my-services');
+  };
+
+  const handlePaymentMethods = () => {
+    navigateToScreen('payment-methods');
+  };
+
+  const handleSaveProfile = (profileData: any) => {
+    console.log('Profile saved:', profileData);
+    // Handle profile saving
+  };
+
+  const handleAddService = () => {
+    navigateToScreen('offer-skills');
+  };
+
+  const handleAddPaymentMethod = () => {
+    console.log('Add payment method');
+    // Handle adding payment method
+  };
+
+  const handleHelpSupport = () => {
+    navigateToScreen('help-support');
+  };
+
+  const handlePrivacyPolicy = () => {
+    navigateToScreen('privacy-policy');
+  };
+
+  const handleTermsOfService = () => {
+    navigateToScreen('terms-of-service');
+  };
+
+  const handleSettings = () => {
+    navigateToScreen('settings');
   };
 
   switch (currentScreen) {
@@ -125,7 +204,8 @@ const AppContent: React.FC = () => {
           onCategoryPress={handleCategoryPress}
           onSeeAllPress={handleSeeAllPress}
           onSearchPress={handleSearchPress}
-          onBackPress={handleBackToMain}
+          onBackPress={navigateBack}
+          onBackToHome={handleBackToMain}
           onBookingsPress={handleBookingsPress}
           onMessagesPress={handleMessagesPress}
           onProfilePress={handleProfilePress}
@@ -135,8 +215,8 @@ const AppContent: React.FC = () => {
       return (
         <ServiceListingScreen
           category={selectedCategory}
-          onBackPress={handleBackToServices}
-          onServicePress={handleServicePress}
+          onBackPress={navigateBack}
+          onServicePress={(service) => handleServicePress(service, false)}
           onBookingsPress={handleBookingsPress}
           onMessagesPress={handleMessagesPress}
           onProfilePress={handleProfilePress}
@@ -145,7 +225,7 @@ const AppContent: React.FC = () => {
     case 'all-categories':
       return (
         <AllCategoriesScreen
-          onBackPress={handleBackToServices}
+          onBackPress={navigateBack}
           onCategoryPress={handleCategoryPress}
           onBookingsPress={handleBookingsPress}
           onMessagesPress={handleMessagesPress}
@@ -155,8 +235,8 @@ const AppContent: React.FC = () => {
     case 'offer-skills':
       return (
         <OfferSkillsScreen
-          onBackPress={handleBackToMain}
-          onServicePress={handleServicePress}
+          onBackPress={navigateBack}
+          onServicePress={(service) => handleServicePress(service, true)}
           onExploreSkills={handleFindServices}
         />
       );
@@ -164,15 +244,18 @@ const AppContent: React.FC = () => {
       return (
         <ServiceDetailScreen
           service={selectedService}
-          onBackPress={handleBackToOfferSkills}
+          isOwnService={isOwnService}
+          onBackPress={navigateBack}
           onEditPress={handleEditService}
           onDeletePress={handleDeleteService}
+          onContactPress={handleContactService}
+          onBookNowPress={handleBookService}
         />
       );
     case 'bookings':
       return (
         <BookingsScreen
-          onBackPress={handleBackToServices}
+          onBackPress={navigateBack}
           onBookingPress={handleBookingPress}
           onHomePress={handleFindServices}
           onMessagesPress={handleMessagesPress}
@@ -182,7 +265,7 @@ const AppContent: React.FC = () => {
     case 'messages':
       return (
         <MessagesScreen
-          onBackPress={handleBackToServices}
+          onBackPress={navigateBack}
           onMessagePress={handleMessagePress}
           onHomePress={handleFindServices}
           onBookingsPress={handleBookingsPress}
@@ -192,11 +275,64 @@ const AppContent: React.FC = () => {
     case 'profile':
       return (
         <ProfileScreen
-          onBackPress={handleBackToServices}
+          onBackPress={navigateBack}
           onLogout={handleLogout}
           onHomePress={handleFindServices}
           onBookingsPress={handleBookingsPress}
           onMessagesPress={handleMessagesPress}
+          onEditProfile={handleEditProfile}
+          onMyServices={handleMyServices}
+          onPaymentMethods={handlePaymentMethods}
+          onHelpSupport={handleHelpSupport}
+          onPrivacyPolicy={handlePrivacyPolicy}
+          onTermsOfService={handleTermsOfService}
+          onSettings={handleSettings}
+        />
+      );
+    case 'edit-profile':
+      return (
+        <EditProfileScreen
+          onBackPress={navigateBack}
+          onSavePress={handleSaveProfile}
+        />
+      );
+    case 'my-services':
+      return (
+        <MyServicesScreen
+          onBackPress={navigateBack}
+          onServicePress={(service) => handleServicePress(service, true)}
+          onAddService={handleAddService}
+        />
+      );
+    case 'payment-methods':
+      return (
+        <PaymentMethodsScreen
+          onBackPress={navigateBack}
+          onAddMethod={handleAddPaymentMethod}
+        />
+      );
+    case 'help-support':
+      return (
+        <HelpSupportScreen
+          onBackPress={navigateBack}
+        />
+      );
+    case 'privacy-policy':
+      return (
+        <PrivacyPolicyScreen
+          onBackPress={navigateBack}
+        />
+      );
+    case 'terms-of-service':
+      return (
+        <TermsOfServiceScreen
+          onBackPress={navigateBack}
+        />
+      );
+    case 'settings':
+      return (
+        <SettingsScreen
+          onBackPress={navigateBack}
         />
       );
     default:

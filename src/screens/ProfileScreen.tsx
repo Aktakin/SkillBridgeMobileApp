@@ -35,9 +35,29 @@ interface ProfileScreenProps {
   onHomePress: () => void;
   onBookingsPress: () => void;
   onMessagesPress: () => void;
+  onEditProfile: () => void;
+  onMyServices: () => void;
+  onPaymentMethods: () => void;
+  onHelpSupport: () => void;
+  onPrivacyPolicy: () => void;
+  onTermsOfService: () => void;
+  onSettings: () => void;
 }
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackPress, onLogout, onHomePress, onBookingsPress, onMessagesPress }) => {
+const ProfileScreen: React.FC<ProfileScreenProps> = ({ 
+  onBackPress, 
+  onLogout, 
+  onHomePress, 
+  onBookingsPress, 
+  onMessagesPress,
+  onEditProfile,
+  onMyServices,
+  onPaymentMethods,
+  onHelpSupport,
+  onPrivacyPolicy,
+  onTermsOfService,
+  onSettings,
+}) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [locationEnabled, setLocationEnabled] = useState(true);
 
@@ -53,21 +73,21 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackPress, onLogout, on
       id: '1',
       title: 'Edit Profile',
       icon: 'person-outline',
-      onPress: () => Alert.alert('Edit Profile', 'Profile editing functionality would be implemented here'),
+      onPress: onEditProfile,
       showArrow: true,
     },
     {
       id: '2',
       title: 'My Services',
       icon: 'briefcase-outline',
-      onPress: () => Alert.alert('My Services', 'View and manage your offered services'),
+      onPress: onMyServices,
       showArrow: true,
     },
     {
       id: '3',
       title: 'Payment Methods',
       icon: 'card-outline',
-      onPress: () => Alert.alert('Payment Methods', 'Manage your payment methods'),
+      onPress: onPaymentMethods,
       showArrow: true,
     },
     {
@@ -92,21 +112,21 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackPress, onLogout, on
       id: '6',
       title: 'Help & Support',
       icon: 'help-circle-outline',
-      onPress: () => Alert.alert('Help & Support', 'Get help and support'),
+      onPress: onHelpSupport,
       showArrow: true,
     },
     {
       id: '7',
       title: 'Privacy Policy',
       icon: 'shield-outline',
-      onPress: () => Alert.alert('Privacy Policy', 'View privacy policy'),
+      onPress: onPrivacyPolicy,
       showArrow: true,
     },
     {
       id: '8',
       title: 'Terms of Service',
       icon: 'document-text-outline',
-      onPress: () => Alert.alert('Terms of Service', 'View terms of service'),
+      onPress: onTermsOfService,
       showArrow: true,
     },
   ];
@@ -126,9 +146,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackPress, onLogout, on
       
       <View style={styles.optionRight}>
         {option.showSwitch && (
-          <View style={[styles.switch, option.switchValue && styles.switchActive]}>
+          <TouchableOpacity
+            style={[styles.switch, option.switchValue && styles.switchActive]}
+            onPress={() => option.onSwitchChange?.(!option.switchValue)}
+          >
             <View style={[styles.switchThumb, option.switchValue && styles.switchThumbActive]} />
-          </View>
+          </TouchableOpacity>
         )}
         {option.showArrow && (
           <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.7)" />
@@ -150,7 +173,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackPress, onLogout, on
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity style={styles.settingsButton}>
+        <TouchableOpacity style={styles.settingsButton} onPress={onSettings}>
           <Ionicons name="settings-outline" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
