@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import ViewToggleSettings from '../components/ViewToggleSettings';
+import { useApp } from '../context/AppContext';
 
 interface SettingsOption {
   id: string;
@@ -28,6 +30,7 @@ interface SettingsScreenProps {
 }
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBackPress }) => {
+  const { showAsProvider, showAsEmployer, toggleViewPreference } = useApp();
   const [settings, setSettings] = useState({
     pushNotifications: true,
     emailNotifications: true,
@@ -374,6 +377,18 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBackPress }) => {
           </View>
         </View>
 
+        {/* View Preferences */}
+        <View style={styles.viewPreferencesSection}>
+          <View style={styles.viewPreferencesCard}>
+            <ViewToggleSettings
+              showAsProvider={showAsProvider}
+              showAsEmployer={showAsEmployer}
+              onToggleProvider={() => toggleViewPreference('provider')}
+              onToggleEmployer={() => toggleViewPreference('employer')}
+            />
+          </View>
+        </View>
+
         {/* Settings Sections */}
         {renderSettingsSection('General', generalSettings)}
         {renderSettingsSection('Notifications', notificationSettings)}
@@ -481,6 +496,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     marginTop: 8,
+  },
+  viewPreferencesSection: {
+    marginBottom: 25,
+  },
+  viewPreferencesCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    overflow: 'hidden',
   },
   settingsSection: {
     marginBottom: 25,

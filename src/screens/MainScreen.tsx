@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
+import { useApp } from '../context/AppContext';
 
 interface MainScreenProps {
   onLogout: () => void;
@@ -16,6 +17,7 @@ interface MainScreenProps {
 }
 
 const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOfferSkills }) => {
+  const { showAsProvider, showAsEmployer } = useApp();
   return (
     <LinearGradient
       colors={['#667eea', '#764ba2']}
@@ -39,21 +41,25 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
         </View>
 
         <View style={styles.featureGrid}>
-          <TouchableOpacity style={styles.featureCard} onPress={onFindServices}>
-            <Text style={styles.featureEmoji}>🔍</Text>
-            <Text style={styles.featureTitle}>Find Services</Text>
-            <Text style={styles.featureDescription}>
-              Discover skilled professionals in your area
-            </Text>
-          </TouchableOpacity>
+          {showAsEmployer && (
+            <TouchableOpacity style={styles.featureCard} onPress={onFindServices}>
+              <Text style={styles.featureEmoji}>🔍</Text>
+              <Text style={styles.featureTitle}>Find Services</Text>
+              <Text style={styles.featureDescription}>
+                Discover skilled professionals in your area
+              </Text>
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity style={styles.featureCard} onPress={onOfferSkills}>
-            <Text style={styles.featureEmoji}>💼</Text>
-            <Text style={styles.featureTitle}>Offer Skills</Text>
-            <Text style={styles.featureDescription}>
-              Showcase your expertise and earn money
-            </Text>
-          </TouchableOpacity>
+          {showAsProvider && (
+            <TouchableOpacity style={styles.featureCard} onPress={onOfferSkills}>
+              <Text style={styles.featureEmoji}>💼</Text>
+              <Text style={styles.featureTitle}>Offer Skills</Text>
+              <Text style={styles.featureDescription}>
+                Showcase your expertise and earn money
+              </Text>
+            </TouchableOpacity>
+          )}
 
           <View style={styles.featureCard}>
             <Text style={styles.featureEmoji}>⭐</Text>
@@ -75,11 +81,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onLogout, onFindServices, onOff
         <View style={styles.ctaCard}>
           <Text style={styles.ctaTitle}>Ready to get started?</Text>
           <Text style={styles.ctaDescription}>
-            Browse services or create your profile to begin
+            {showAsEmployer && showAsProvider 
+              ? 'Browse services or create your profile to begin'
+              : showAsEmployer 
+                ? 'Browse services to find skilled professionals'
+                : 'Create your profile to start offering services'
+            }
           </Text>
-          <TouchableOpacity style={styles.ctaButton} onPress={onFindServices}>
-            <Text style={styles.ctaButtonText}>Find Services</Text>
-          </TouchableOpacity>
+          {showAsEmployer && (
+            <TouchableOpacity style={styles.ctaButton} onPress={onFindServices}>
+              <Text style={styles.ctaButtonText}>Find Services</Text>
+            </TouchableOpacity>
+          )}
+          {showAsProvider && !showAsEmployer && (
+            <TouchableOpacity style={styles.ctaButton} onPress={onOfferSkills}>
+              <Text style={styles.ctaButtonText}>Offer Skills</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </LinearGradient>

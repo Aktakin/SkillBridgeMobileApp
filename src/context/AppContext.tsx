@@ -13,6 +13,12 @@ interface AppContextType {
   setNavigationHistory: (history: ScreenType[]) => void;
   user: any | null;
   setUser: (user: any | null) => void;
+  // View preferences
+  showAsProvider: boolean;
+  setShowAsProvider: (value: boolean) => void;
+  showAsEmployer: boolean;
+  setShowAsEmployer: (value: boolean) => void;
+  toggleViewPreference: (viewType: 'provider' | 'employer') => void;
   // Bargaining state
   services: Service[];
   setServices: (services: Service[]) => void;
@@ -34,10 +40,17 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [navigationHistory, setNavigationHistory] = useState<ScreenType[]>(['splash']);
   const [user, setUser] = useState<any | null>(null);
   const [services, setServices] = useState<Service[]>([]);
+  const [showAsProvider, setShowAsProvider] = useState<boolean>(true);
+  const [showAsEmployer, setShowAsEmployer] = useState<boolean>(true);
 
   useEffect(() => {
     checkFirstLaunch();
+    loadViewPreferences();
   }, []);
+
+  useEffect(() => {
+    saveViewPreferences();
+  }, [showAsProvider, showAsEmployer]);
 
   const checkFirstLaunch = async () => {
     try {
@@ -50,6 +63,43 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('Error checking first launch:', error);
+    }
+  };
+
+  const loadViewPreferences = async () => {
+    try {
+      const providerPref = await AsyncStorage.getItem('showAsProvider');
+      const employerPref = await AsyncStorage.getItem('showAsEmployer');
+      
+      if (providerPref !== null) {
+        setShowAsProvider(JSON.parse(providerPref));
+      }
+      if (employerPref !== null) {
+        setShowAsEmployer(JSON.parse(employerPref));
+      }
+    } catch (error) {
+      console.error('Error loading view preferences:', error);
+    }
+  };
+
+  const saveViewPreferences = async () => {
+    try {
+      await AsyncStorage.setItem('showAsProvider', JSON.stringify(showAsProvider));
+      await AsyncStorage.setItem('showAsEmployer', JSON.stringify(showAsEmployer));
+    } catch (error) {
+      console.error('Error saving view preferences:', error);
+    }
+  };
+
+  const toggleViewPreference = (viewType: 'provider' | 'employer') => {
+    if (viewType === 'provider') {
+      // Can't turn off provider if employer is already off
+      if (!showAsEmployer) return;
+      setShowAsProvider(!showAsProvider);
+    } else {
+      // Can't turn off employer if provider is already off
+      if (!showAsProvider) return;
+      setShowAsEmployer(!showAsEmployer);
     }
   };
 
@@ -136,6 +186,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setNavigationHistory,
     user,
     setUser,
+    showAsProvider,
+    setShowAsProvider,
+    showAsEmployer,
+    setShowAsEmployer,
+    toggleViewPreference,
     services,
     setServices,
     sendBargainOffer,

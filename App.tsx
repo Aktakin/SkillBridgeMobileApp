@@ -22,7 +22,7 @@ import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 
 const AppContent: React.FC = () => {
-  const { currentScreen, setCurrentScreen, isFirstLaunch, navigationHistory, setNavigationHistory } = useApp();
+  const { currentScreen, setCurrentScreen, isFirstLaunch, navigationHistory, setNavigationHistory, showAsProvider, showAsEmployer } = useApp();
   const [selectedService, setSelectedService] = React.useState<any>(null);
   const [selectedCategory, setSelectedCategory] = React.useState<any>(null);
   const [isOwnService, setIsOwnService] = React.useState<boolean>(false);
@@ -233,6 +233,11 @@ const AppContent: React.FC = () => {
         />
       );
     case 'offer-skills':
+      if (!showAsProvider) {
+        // Redirect to main if provider view is disabled
+        navigateToScreen('main');
+        return null;
+      }
       return (
         <OfferSkillsScreen
           onBackPress={navigateBack}
@@ -245,6 +250,8 @@ const AppContent: React.FC = () => {
         <ServiceDetailScreen
           service={selectedService}
           isOwnService={isOwnService}
+          currentUserId="current-user-id"
+          currentUserType={showAsProvider ? 'provider' : 'seeker'}
           onBackPress={navigateBack}
           onEditPress={handleEditService}
           onDeletePress={handleDeleteService}
@@ -297,6 +304,11 @@ const AppContent: React.FC = () => {
         />
       );
     case 'my-services':
+      if (!showAsProvider) {
+        // Redirect to main if provider view is disabled
+        navigateToScreen('main');
+        return null;
+      }
       return (
         <MyServicesScreen
           onBackPress={navigateBack}
